@@ -103,11 +103,7 @@ worker.postMessage(memory);
 let imports = {env: {memory: memory}};
 let module = WebAssembly.instantiate(moduleBytes, imports).then(
     ({instance}) => {
-        // Blocking on the main thread is not allowed, so we can't
-        // call lockMutex.
-        if (instance.exports.tryLockMutex(mutexAddr)) {
             ...
-            instance.exports.unlockMutex(mutexAddr);
         }
     });
 
@@ -122,10 +118,7 @@ onmessage = function(e) {
     let imports = {env: {memory: memory}};
     let module = WebAssembly.instantiate(moduleBytes, imports).then(
         ({instance}) => {
-            // Blocking on a Worker thread is allowed.
-            instance.exports.lockMutex(mutexAddr);
             ...
-            instance.exports.unlockMutex(mutexAddr);
         });
 };
 ```
